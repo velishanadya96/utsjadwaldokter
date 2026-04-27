@@ -13,9 +13,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT); 
     $role = 'user'; 
 
-    $sql = "INSERT INTO users (nama, nik, email, password, tempat_lahir, tgl_lahir, riwayat_penyakit, provinsi, kabupaten, role) 
-            VALUES ('$nama', '$nik', '$email', '$password', '$tempat_lahir', '$tgl_lahir', '$riwayat', '$provinsi', '$kabupaten', '$role')";
+    // Buat ID unik dari timestamp
+$id_baru = time();
 
+$sql = "INSERT INTO users (id, nama, nik, email, password, tempat_lahir, tgl_lahir, riwayat_penyakit, provinsi, kabupaten, role) 
+        VALUES ('$id_baru', '$nama', '$nik', '$email', '$password', '$tempat_lahir', '$tgl_lahir', '$riwayat', '$provinsi', '$kabupaten', '$role')";
     if (mysqli_query($conn, $sql)) {
         echo "<script>alert('Pendaftaran Berhasil!'); window.location='login.php';</script>";
     } else {
