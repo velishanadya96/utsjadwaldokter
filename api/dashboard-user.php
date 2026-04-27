@@ -2,8 +2,6 @@
 session_start();
 include 'config.php'; 
 
-var_dump($_SESSION); 
-die();
 
 // Keamanan: Jika belum login, tendang ke login.php
 if (!isset($_SESSION['user_email'])) {
@@ -50,7 +48,7 @@ if (!isset($_SESSION['user_email'])) {
                 <tbody class="divide-y divide-gray-50">
                     <?php
                     // Ambil data lewat API
-                    $url = "http://localhost/jadwal-dokter/api-dokter.php";
+                    $url = "https://" . $_SERVER['HTTP_HOST'] . "/api/api-dokter.php";
                     $json_data = @file_get_contents($url); 
                     $ambil_data = json_decode($json_data, true);
 

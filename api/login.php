@@ -22,10 +22,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Arahkan berdasarkan role
             if ($row['role'] == 'admin') {
-                header("Location: ../dashboard-admin.php");
+                header("Location: dashboard-admin.php");
                 exit();
             } else {
-                header("Location: /jadwal-dokter/dashboard-user.php");
+                header("Location: dashboard-user.php");
                 exit();
             }
         } else {
