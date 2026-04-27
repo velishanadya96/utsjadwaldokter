@@ -1,6 +1,9 @@
 <?php
-include 'config.php'; 
 session_start();
+include 'config.php'; 
+
+var_dump($_SESSION); 
+die();
 
 // Keamanan: Jika belum login, tendang ke login.php
 if (!isset($_SESSION['user_email'])) {
@@ -8,6 +11,7 @@ if (!isset($_SESSION['user_email'])) {
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
