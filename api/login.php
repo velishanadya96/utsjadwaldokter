@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['nama'] = $row['nama'];
             $_SESSION['role'] = $row['role'];
             $_SESSION['user_email'] = $row['email'];
+            
 
             // Arahkan berdasarkan role
             if ($row['role'] == 'admin') {

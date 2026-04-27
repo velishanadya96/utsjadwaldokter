@@ -5,11 +5,11 @@ $user = '2h7AMb9FTB6BmYe.root';
 $pass = '29xnSbI4kHNOZnPN';
 $db   = 'klinik-db';
 
-$conn = mysqli_init(); // Pakai $conn
+$conn = mysqli_init();
 mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
 
 $real_connect = mysqli_real_connect(
-    $conn, // Jangan pakai $koneksi
+    $conn, 
     $host, 
     $user, 
     $pass, 
@@ -20,6 +20,6 @@ $real_connect = mysqli_real_connect(
 );
 
 if (!$real_connect) {
-    die("Koneksi ke TiDB Cloud gagal: " . mysqli_connect_error());
+    die("Koneksi gagal: " . mysqli_connect_error());
 }
 ?>
