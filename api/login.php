@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'config.php';
+include __DIR__ . '/config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
