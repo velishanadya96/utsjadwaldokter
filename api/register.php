@@ -1,5 +1,5 @@
 <?php
-include 'config.php'; 
+include __DIR__ . '/config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nama = $_POST['nama'];
@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $tempat_lahir = $_POST['tempat_lahir'];
     $tgl_lahir = $_POST['tgl_lahir'];
-    $riwayat = $_POST['riwayat_penyakit'];
+    $riwayat = $_POST['riwayat_penyakit'] ?? '';
     $provinsi = $_POST['provinsi'];
     $kabupaten = $_POST['kabupaten']; // Ambil data kabupaten
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT); 
