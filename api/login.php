@@ -21,9 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Arahkan berdasarkan role
             if ($row['role'] == 'admin') {
-                header("Location: dashboard-admin.php");
+                header("Location: ../dashboard-admin.php");
             } else {
-                header("Location: dashboard-user.php");
+                header("Location: ../dashboard-user.php");
             }
         } else {
             echo "<script>alert('Password salah!');</script>";
