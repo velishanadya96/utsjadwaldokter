@@ -114,11 +114,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (idProv) {
                     selectKab.innerHTML = '<option value="">Memuat Kabupaten...</option>';
                     
-                    // Kita ambil data kabupaten dari BPS berdasarkan ID Provinsi
-                    // URL: domain/type/kabbyprov/prov/(ID PROVINSI)
                     const urlKab = `https://webapi.bps.go.id/v1/api/domain/type/kabbyprov/prov/${idProv}/key/5fac61ddd743d80db3867d22d4baf88c/`;
                     
-                    // Gunakan fetch langsung ke BPS (atau buat file proxy lagi seperti get-provinsi.php)
                     fetch(urlKab)
                         .then(res => res.json())
                         .then(resData => {
@@ -131,8 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 selectKab.appendChild(opt);
                             });
                             
-                            // Ganti value provinsi dari ID menjadi Nama sebelum dikirim ke PHP
-                            // Trik: buat hidden input atau ubah value saat submit
+                           
                         });
                 }
             });
