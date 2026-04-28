@@ -30,7 +30,6 @@ echo $user['role'];
     <main class="flex-1 p-8">
         <header class="flex justify-between items-center mb-10">
             <h1 class="text-3xl font-bold text-gray-800">Cek Ketersediaan Dokter</h1>
-            <p class="text-sm text-gray-500">Halo, <b><?php echo $_SESSION['user_email']; ?></b></p>
         </header>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
