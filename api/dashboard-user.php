@@ -5,7 +5,7 @@ include 'config.php';
 
 // Keamanan: Jika belum login, tendang ke login.php
 if (!isset($_SESSION['user_email'])) {
-    header("Location: login.php");
+    header("Location: /api/login.php");
     exit();
 }
 ?>
