@@ -36,7 +36,7 @@ if (isset($_POST['konfirmasi'])) {
 
     // Simpan ke tabel antrean
     $simpan = mysqli_query($conn, "INSERT INTO antrean (id_dokter, nama_pasien, nik_pasien, no_antrean, tanggal_daftar) 
-                                   VALUES ('$id_dokter', '$nama', '$nik', '$nomor_baru', NOW())");
+                               VALUES ('$id_dokter', '$nama', '$nik', '$nomor_baru', NOW())");
 
     if ($simpan) {
         echo "<script>alert('Berhasil! Nomor Antrean Anda: $nomor_baru'); window.location='dashboard-user.php';</script>";
