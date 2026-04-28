@@ -1,27 +1,29 @@
 <?php
-include __DIR__ . '/config.php';
+include 'config.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nama = $_POST['nama'];
-    $nik = $_POST['nik'];
-    $email = $_POST['email'];
-    $tempat_lahir = $_POST['tempat_lahir'];
-    $tgl_lahir = $_POST['tgl_lahir'];
-    $riwayat = $_POST['riwayat_penyakit'] ?? '';
-    $provinsi = $_POST['provinsi'];
-    $kabupaten = $_POST['kabupaten']; // Ambil data kabupaten
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); 
-    $role = 'user'; 
+if (isset($_POST['register'])) {
+    // Ambil data dari form dan bersihkan agar aman
+    $nama  = mysqli_real_escape_string($conn, $_POST['nama']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $nik   = mysqli_real_escape_string($conn, $_POST['nik']);
+    $pass  = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $role  = 'user';
 
-    // Buat ID unik dari timestamp
-$id_baru = time();
-
-$sql = "INSERT INTO users (id, nama, nik, email, password, tempat_lahir, tgl_lahir, riwayat_penyakit, provinsi, kabupaten, role) 
-        VALUES ('$id_baru', '$nama', '$nik', '$email', '$password', '$tempat_lahir', '$tgl_lahir', '$riwayat', '$provinsi', '$kabupaten', '$role')";
-    if (mysqli_query($conn, $sql)) {
-        echo "<script>alert('Pendaftaran Berhasil!'); window.location='login.php';</script>";
+    // 1. Cek dulu apakah NIK ini sudah terdaftar?
+    $cek_nik = mysqli_query($conn, "SELECT nik FROM users WHERE nik = '$nik'");
+    
+    if (mysqli_num_rows($cek_nik) > 0) {
+        echo "<script>alert('NIK sudah terdaftar! Gunakan NIK lain.'); window.history.back();</script>";
     } else {
-        echo "Error: " . mysqli_error($conn);
+        // 2. Jika belum ada, baru jalankan INSERT
+        $query = "INSERT INTO users (nama, email, nik, password, role) 
+                  VALUES ('$nama', '$email', '$nik', '$pass', '$role')";
+        
+        if (mysqli_query($conn, $query)) {
+            echo "<script>alert('Registrasi Berhasil!'); window.location='login.php';</script>";
+        } else {
+            echo "Error: " . mysqli_error($conn);
+        }
     }
 }
 ?>
