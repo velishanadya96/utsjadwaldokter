@@ -88,6 +88,7 @@ if (isset($_POST['register'])) {
             </div>
 
             <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg">Daftar Sekarang</button>
+            <p>Sudah Punya Akun ? <b><a href="login.php">Masuk</a></b></p>
         </form>
     </div>
 
