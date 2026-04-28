@@ -1,14 +1,13 @@
 <?php
-include 'config.php';
-session_start();
+// riwayat.php
+include __DIR__ . '/config.php';
+include __DIR__ . '/auth_check.php';
 
-// Cek apakah user sudah login
-if (!isset($_SESSION['nama'])) {
-    header("Location: login.php");
-    exit();
-}
+// Gunakan fungsi yang sama agar sistem tahu user sudah login
+$user = checkAuth(); 
 
-$nama_user = $_SESSION['nama'];
+// Gunakan nama user dari hasil checkAuth untuk query
+$nama_user = mysqli_real_escape_string($conn, $user['nama']);
 ?>
 
 <!DOCTYPE html>
