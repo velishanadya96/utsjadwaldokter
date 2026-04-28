@@ -6,35 +6,23 @@ function checkAuth(): array {
 
     // Cek apakah cookie auth_token ada
     if (empty($_COOKIE['auth_token'])) {
-        // PERBAIKAN: Redirect konsisten ke /api/login.php
-        header("Location: /api/login.php");
+        header("Location: /login.php");
         exit();
     }
 
+    // Hash token dari cookie lalu cocokkan dengan DB
     $hashedToken = hash('sha256', $_COOKIE['auth_token']);
+    $query = "SELECT u.* FROM users u
+              JOIN user_tokens t ON u.id = t.user_id
+              WHERE t.token = '$hashedToken'
+                AND t.expires_at > NOW()
+              LIMIT 1";
+    $result = mysqli_query($conn, $query);
 
-    // PERBAIKAN: Pakai prepared statement
-    $stmt = mysqli_prepare($conn,
-        "SELECT u.* FROM users u
-         JOIN user_tokens t ON u.id = t.user_id
-         WHERE t.token = ?
-           AND t.expires_at > NOW()
-         LIMIT 1"
-    );
-    mysqli_stmt_bind_param($stmt, 's', $hashedToken);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-
-    if (!$result || mysqli_num_rows($result) === 0) {
-        // Hapus cookie yang tidak valid / expired
-        setcookie('auth_token', '', [
-            'expires'  => time() - 3600,
-            'path'     => '/',
-            'secure'   => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
-        header("Location: /api/login.php");
+    // Token tidak valid atau sudah expired
+    if (mysqli_num_rows($result) === 0) {
+        setcookie('auth_token', '', time() - 3600, '/');
+        header("Location: /login.php");
         exit();
     }
 
