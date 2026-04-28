@@ -1,38 +1,54 @@
 <?php
-session_start();
 include __DIR__ . '/config.php';
 
+function setAuthCookie(string $name, string $value, int $days = 1): void {
+    setcookie($name, $value, [
+        'expires'  => time() + (86400 * $days),
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $email    = mysqli_real_escape_string($conn, $_POST['email']);
     $password = $_POST['password'];
 
-    // Cari user berdasarkan email
-    $query = "SELECT * FROM users WHERE email = '$email'";
+    $query  = "SELECT * FROM users WHERE email = '$email'";
     $result = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        
-        // Verifikasi password yang dienkripsi
-        if (password_verify($password, $row['password'])) {
-            $_SESSION['nama'] = $row['nama'];
-            $_SESSION['role'] = $row['role'];
-            $_SESSION['user_email'] = $row['email'];
-            
 
-            // Arahkan berdasarkan role
+        if (password_verify($password, $row['password'])) {
+            // Buat token & simpan hash ke DB
+            $token       = bin2hex(random_bytes(32));
+            $hashedToken = hash('sha256', $token);
+            $userId      = (int) $row['id'];
+            $expiresAt   = date('Y-m-d H:i:s', time() + 86400);
+
+            $saveToken = "INSERT INTO user_tokens (user_id, token, expires_at)
+                          VALUES ('$userId', '$hashedToken', '$expiresAt')
+                          ON DUPLICATE KEY UPDATE token = '$hashedToken', expires_at = '$expiresAt'";
+            mysqli_query($conn, $saveToken);
+
+            // Set cookie
+            setAuthCookie('auth_token', $token);
+
+            // Redirect sesuai role
             if ($row['role'] == 'admin') {
                 header("Location: /api/dashboard-admin.php");
-                exit();
             } else {
                 header("Location: /api/dashboard-user.php");
-                exit();
             }
+            exit();
+
         } else {
-            echo "<script>alert('Password salah!');</script>";
+            $error = "Password salah!";
         }
     } else {
-        echo "<script>alert('Email tidak terdaftar!');</script>";
+        $error = "Email tidak terdaftar!";
     }
 }
 ?>
