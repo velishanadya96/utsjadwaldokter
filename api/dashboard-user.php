@@ -3,10 +3,7 @@
 include __DIR__ . '/auth_check.php';
 $user = checkAuth();
 
-// Akses data user yang login
-echo $user['nama'];
-echo $user['email'];
-echo $user['role'];
+
 ?>
 
 <!DOCTYPE html>
