@@ -7,5 +7,5 @@ if (!empty($_COOKIE['auth_token'])) {
 }
 
 setcookie('auth_token', '', time() - 3600, '/');
-header("Location: /login.php");
+header("Location: /api/login.php");
 exit();
