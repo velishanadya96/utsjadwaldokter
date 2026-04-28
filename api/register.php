@@ -20,7 +20,7 @@ if (isset($_POST['register'])) {
                   VALUES ('$nama', '$email', '$nik', '$pass', '$role')";
         
         if (mysqli_query($conn, $query)) {
-            echo "<script>alert('Registrasi Berhasil!'); window.location='login.php';</script>";
+            echo "<script>alert('Registrasi Berhasil!'); window.location='/api/login.php';</script>";
         } else {
             echo "Error: " . mysqli_error($conn);
         }
