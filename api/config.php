@@ -7,8 +7,8 @@ $db   = 'klinik_db'; // PERBAIKAN: ganti tanda '-' dengan '_' di nama database T
 
 $conn = mysqli_init();
 
-// TiDB Cloud wajib SSL — set cipher agar koneksi tidak ditolak
-mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, 'AES128-SHA256');
+// Tidak set cipher spesifik — biarkan OpenSSL di server Vercel negotiate sendiri
+mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
 
 $real_connect = mysqli_real_connect(
     $conn,
@@ -18,11 +18,11 @@ $real_connect = mysqli_real_connect(
     $db,
     $port,
     NULL,
-    MYSQLI_CLIENT_SSL | MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT
+    MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT
 );
 
 if (!$real_connect) {
-    die(json_encode(['error' => 'Koneksi gagal: ' . mysqli_connect_error()]));
+    die("Koneksi gagal: " . mysqli_connect_error());
 }
 
 // Set charset agar karakter Indonesia (é, ñ, dll) tidak rusak
