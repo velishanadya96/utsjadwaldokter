@@ -1,36 +1,47 @@
 <?php
-session_start();
-include 'config.php';
+// ambil-antrean.php
+include __DIR__ . '/config.php';
+include __DIR__ . '/auth_check.php';
 
-// Cek login
-if (!isset($_SESSION['nama'])) {
-    header("Location: login.php");
-    exit();
-}
+$user = checkAuth(); 
 
 // Ambil ID Dokter dari URL
-$id_dokter = $_GET['id'];
+$id_dokter = mysqli_real_escape_string($conn, $_GET['id'] ?? '');
+
+if (!$id_dokter) {
+    header("Location: dashboard-user.php");
+    exit();
+}
 
 // Ambil data dokter dari database
 $query_dokter = mysqli_query($conn, "SELECT * FROM dokter WHERE id = '$id_dokter'");
 $dokter = mysqli_fetch_assoc($query_dokter);
 
+// Jika dokter tidak ditemukan
+if (!$dokter) {
+    echo "<script>alert('Dokter tidak ditemukan!'); window.location='dashboard-user.php';</script>";
+    exit();
+}
+
 // Jika tombol Konfirmasi diklik
 if (isset($_POST['konfirmasi'])) {
-    $nama = $_SESSION['nama'];
-    $nik = "Data dari Session"; // Kamu bisa ambil NIK dari database jika disimpan di session
+    // Ambil nama dari variabel $user hasil checkAuth()
+    $nama = mysqli_real_escape_string($conn, $user['nama']);
+    $nik = "Data dari Session"; // Sesuaikan jika ada $user['nik']
     
     // Cari nomor antrean terakhir untuk dokter ini
     $cek_antrean = mysqli_query($conn, "SELECT MAX(no_antrean) as terakhir FROM antrean WHERE id_dokter = '$id_dokter'");
     $data_antrean = mysqli_fetch_assoc($cek_antrean);
-    $nomor_baru = $data_antrean['terakhir'] + 1;
+    $nomor_baru = ($data_antrean['terakhir'] ?? 0) + 1;
 
     // Simpan ke tabel antrean
-    $simpan = mysqli_query($conn, "INSERT INTO antrean (id_dokter, nama_pasien, nik_pasien, no_antrean) 
-                                   VALUES ('$id_dokter', '$nama', '$nik', '$nomor_baru')");
+    $simpan = mysqli_query($conn, "INSERT INTO antrean (id_dokter, nama_pasien, nik_pasien, no_antrean, tanggal_daftar) 
+                                   VALUES ('$id_dokter', '$nama', '$nik', '$nomor_baru', NOW())");
 
     if ($simpan) {
         echo "<script>alert('Berhasil! Nomor Antrean Anda: $nomor_baru'); window.location='dashboard-user.php';</script>";
+    } else {
+        echo "<script>alert('Gagal mengambil antrean.');</script>";
     }
 }
 ?>
@@ -48,12 +59,12 @@ if (isset($_POST['konfirmasi'])) {
         
         <div class="bg-blue-50 p-4 rounded-xl mb-6 text-sm">
             <p class="text-gray-500">Pasien:</p>
-            <p class="font-bold text-lg mb-3"><?php echo $_SESSION['nama']; ?></p>
+            <p class="font-bold text-lg mb-3"><?php echo htmlspecialchars($user['nama']); ?></p>
             
             <p class="text-gray-500">Dokter Tujuan:</p>
-            <p class="font-bold text-blue-700"><?php echo $dokter['nama_dokter']; ?></p>
-            <p class="text-gray-600"><?php echo $dokter['spesialis']; ?></p>
-            <p class="text-xs mt-2 text-gray-400"><?php echo $dokter['hari']; ?> | <?php echo $dokter['jam_praktik']; ?></p>
+            <p class="font-bold text-blue-700"><?php echo htmlspecialchars($dokter['nama_dokter']); ?></p>
+            <p class="text-gray-600"><?php echo htmlspecialchars($dokter['spesialis']); ?></p>
+            <p class="text-xs mt-2 text-gray-400"><?php echo htmlspecialchars($dokter['hari']); ?> | <?php echo htmlspecialchars($dokter['jam_praktik']); ?></p>
         </div>
 
         <form method="POST">
