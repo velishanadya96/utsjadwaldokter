@@ -1,25 +1,13 @@
 <?php
-include 'config.php';
-session_start();
+// dashboard-admin.php
+include __DIR__ . '/auth_check.php';
+$user = checkAuth();
 
-// Proteksi halaman admin
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: login.php");
+// Khusus halaman admin, tambahkan cek role
+if ($user['role'] !== 'admin') {
+    header("Location: /api/dashboard-user.php");
     exit();
 }
-
-// LOGIKA HAPUS DATA
-if (isset($_GET['hapus'])) {
-    $id_hapus = $_GET['hapus'];
-    $query_hapus = "DELETE FROM users WHERE id = '$id_hapus' AND role = 'user'";
-    if (mysqli_query($conn, $query_hapus)) {
-        echo "<script>alert('Data berhasil dihapus!'); window.location='dashboard-admin.php';</script>";
-    }
-}
-
-// Ambil data user (TAMBAHKAN kolom provinsi di sini)
-$query = "SELECT id, nama, nik, email, tempat_lahir, tgl_lahir, riwayat_penyakit, provinsi, last_login FROM users WHERE role = 'user'";
-$result = mysqli_query($conn, $query);
 ?>
 
 <!DOCTYPE html>

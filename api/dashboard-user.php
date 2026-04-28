@@ -1,13 +1,12 @@
 <?php
-session_start();
-include 'config.php'; 
+// dashboard-user.php
+include __DIR__ . '/auth_check.php';
+$user = checkAuth();
 
-
-// Keamanan: Jika belum login, tendang ke login.php
-if (!isset($_SESSION['user_email'])) {
-    header("Location: /api/login.php");
-    exit();
-}
+// Akses data user yang login
+echo $user['nama'];
+echo $user['email'];
+echo $user['role'];
 ?>
 
 <!DOCTYPE html>
