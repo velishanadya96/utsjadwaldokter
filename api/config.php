@@ -3,12 +3,9 @@ $host = 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com';
 $port = 4000;
 $user = '2h7AMb9FTB6BmYe.root';
 $pass = '29xnSbI4kHNOZnPN';
-$db   = 'klinik-db';
+$db   = 'klinik-db'; // tetap pakai nama asli
 
 $conn = mysqli_init();
-
-// Set SSL: aktifkan SSL tapi skip verifikasi sertifikat server
-// Cara ini kompatibel dengan OpenSSL versi lama di Vercel
 mysqli_options($conn, MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, false);
 mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
 
@@ -20,7 +17,7 @@ $real_connect = mysqli_real_connect(
     $db,
     $port,
     NULL,
-    MYSQLI_CLIENT_SSL  // aktifkan SSL
+    MYSQLI_CLIENT_SSL
 );
 
 if (!$real_connect) {
