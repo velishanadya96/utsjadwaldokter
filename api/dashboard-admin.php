@@ -35,9 +35,9 @@ if (!$result) {
     <aside class="w-64 min-h-screen bg-slate-900 text-white p-6">
         <h2 class="text-xl font-bold mb-8 text-blue-400">Admin Klinik</h2>
         <nav class="flex flex-col gap-2">
-            <a href="/api/dashboard-admin.php" class="block py-2.5 px-4 bg-slate-800 rounded text-white font-semibold">👥 Data Pasien</a>
-            <a href="/api/kelola-jadwal.php" class="block py-2.5 px-4 hover:bg-slate-700 rounded transition text-blue-300 font-semibold">📅 Kelola Jadwal Dokter</a>
-            <a href="/api/logout.php" class="block py-2.5 px-4 text-red-400 hover:bg-red-900/20 rounded transition mt-10">🚪 Logout</a>
+            <a href="/api/dashboard-admin.php" class="block py-2.5 px-4 bg-slate-800 rounded text-white font-semibold"> Data Pasien</a>
+            <a href="/api/kelola-jadwal.php" class="block py-2.5 px-4 hover:bg-slate-700 rounded transition text-blue-300 font-semibold"> Kelola Jadwal Dokter</a>
+            <a href="/api/logout.php" class="block py-2.5 px-4 text-red-400 hover:bg-red-900/20 rounded transition mt-10"> Logout</a>
         </nav>
     </aside>
 

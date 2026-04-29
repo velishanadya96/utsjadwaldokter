@@ -20,7 +20,7 @@ $user = checkAuth();
         <nav class="space-y-4">
             <a href="/api/dashboard-user.php" class="block py-2 px-4 bg-blue-800 rounded shadow-md font-semibold">Cek Jadwal</a>
             <a href="/api/riwayat.php" class="block py-2.5 px-4 hover:bg-blue-600 rounded transition">Riwayat Antrean</a>
-            <a href="/api/logout.php" class="block py-2 px-4 text-red-300 mt-10">Keluar</a>
+            <a href="/api/logout.php" class="block py-2 px-4 text-red-300 mt-10">Logout</a>
         </nav>
     </aside>
 
