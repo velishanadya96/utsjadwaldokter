@@ -1,5 +1,5 @@
 <?php
-include 'config.php';
+include __DIR__ . '/config.php';
 
 if (isset($_POST['register'])) {
     // Ambil data dari form dan bersihkan agar aman
@@ -20,7 +20,7 @@ if (isset($_POST['register'])) {
                   VALUES ('$nama', '$email', '$nik', '$pass', '$role')";
         
         if (mysqli_query($conn, $query)) {
-            echo "<script>alert('Registrasi Berhasil!'); window.location='/api/login.php';</script>";
+            echo "<script>alert('Registrasi Berhasil!'); window.location='login.php';</script>";
         } else {
             echo "Error: " . mysqli_error($conn);
         }
@@ -87,7 +87,7 @@ if (isset($_POST['register'])) {
                 <input type="password" name="password" required class="w-full mt-1 px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
-            <button type="submit" name="register" class="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg">Daftar Sekarang</button>
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg">Daftar Sekarang</button>
         </form>
     </div>
 
