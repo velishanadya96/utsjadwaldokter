@@ -8,6 +8,9 @@ if ($user['role'] !== 'admin') {
     header("Location: /api/dashboard-user.php");
     exit();
 }
+
+$result = mysqli_query($conn, "SELECT * FROM users WHERE role = 'user' ORDER BY id DESC");
+
 ?>
 
 <!DOCTYPE html>
