@@ -7,7 +7,7 @@ function setAuthCookie(string $name, string $value, int $days = 1): void {
         'path'     => '/',
         'secure'   => true,
         'httponly' => true,
-        'samesite' => 'Strict'
+        'samesite' => 'Lax'   // PERBAIKAN: Strict -> Lax agar cookie terkirim saat navigasi
     ]);
 }
 

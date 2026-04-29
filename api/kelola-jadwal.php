@@ -25,6 +25,7 @@ if (isset($_POST['simpan'])) {
         mysqli_query($conn, "UPDATE dokter SET nama_dokter='$nama', spesialis='$spesialis', hari='$hari', jam_praktik='$jam', status='$status' WHERE id=$id");
     }
     header("Location: /api/kelola-jadwal.php");
+    exit();
 }
 
 // Logika Hapus
@@ -99,6 +100,15 @@ $result = mysqli_query($conn, "SELECT * FROM dokter");
         document.getElementById('hari').value = data.hari;
         document.getElementById('jam').value = data.jam_praktik;
         document.getElementById('status').value = data.status;
+
+        // Ganti teks tombol supaya user tahu sedang mode edit
+        var btn = document.querySelector('button[name="simpan"]');
+        btn.textContent = 'Update Jadwal';
+        btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        btn.classList.add('bg-orange-500', 'hover:bg-orange-600');
+
+        // Scroll ke form agar user sadar form sudah terisi
+        document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
     }
     </script>
 </body>

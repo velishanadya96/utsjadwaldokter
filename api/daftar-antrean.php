@@ -1,14 +1,28 @@
 <?php
-session_start();
-// Pastikan hanya pasien yang bisa akses
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
-    header("Location: login.php");
+include __DIR__ . '/config.php';
+include __DIR__ . '/auth_check.php';
+
+$user = checkAuth();
+
+if ($user['role'] !== 'user') {
+    header("Location: /api/dashboard-admin.php");
     exit();
 }
 
-// Simulasi data dokter yang dipilih (biasanya dikirim via URL: ?id=1)
-$nama_dokter = isset($_GET['dokter']) ? $_GET['dokter'] : "dr. Andi Wijaya";
-$spesialis = isset($_GET['spesialis']) ? $_GET['spesialis'] : "Spesialis Anak";
+// Ambil data dokter dari URL id
+$id_dokter = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($id_dokter) {
+    $q = mysqli_prepare($conn, "SELECT * FROM dokter WHERE id = ?");
+    mysqli_stmt_bind_param($q, 'i', $id_dokter);
+    mysqli_stmt_execute($q);
+    $res = mysqli_stmt_get_result($q);
+    $dok = mysqli_fetch_assoc($res);
+    $nama_dokter = $dok ? $dok['nama_dokter'] : '-';
+    $spesialis   = $dok ? $dok['spesialis'] : '-';
+} else {
+    $nama_dokter = isset($_GET['dokter']) ? htmlspecialchars($_GET['dokter']) : '-';
+    $spesialis   = isset($_GET['spesialis']) ? htmlspecialchars($_GET['spesialis']) : '-';
+}
 ?>
 
 <!DOCTYPE html>
@@ -26,7 +40,7 @@ $spesialis = isset($_GET['spesialis']) ? $_GET['spesialis'] : "Spesialis Anak";
             <p class="text-blue-100">Silakan lengkapi data untuk kunjungan Anda</p>
         </div>
 
-        <form action="proses-daftar.php" method="POST" class="p-8 space-y-6">
+        <form action="/api/ambil-antrean.php?id=<?php echo $id_dokter; ?>" method="POST" class="p-8 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-blue-50 p-4 rounded-lg border border-blue-100">
                 <div>
                     <label class="text-xs font-bold text-blue-600 uppercase">Dokter Tujuan</label>
@@ -61,8 +75,8 @@ $spesialis = isset($_GET['spesialis']) ? $_GET['spesialis'] : "Spesialis Anak";
             </div>
 
             <div class="flex items-center justify-end space-x-4 pt-4">
-                <a href="dashboard-user.php" class="text-gray-500 hover:text-gray-700 font-medium">Batal</a>
-                <button type="submit" 
+                <a href="/api/dashboard-user.php" class="text-gray-500 hover:text-gray-700 font-medium">Batal</a>
+                <button type="submit" name="konfirmasi"
                         class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition transform active:scale-95">
                     Ambil Nomor Antrean
                 </button>
