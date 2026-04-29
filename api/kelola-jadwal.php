@@ -1,9 +1,14 @@
 <?php
-include 'config.php';
-session_start();
+include __DIR__ . '/config.php';
+include __DIR__ . '/auth_check.php';
+
+$user = checkAuth();
 
 // Cek Admin
-if ($_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
+if ($user['role'] !== 'admin') {
+    header("Location: /api/dashboard-user.php");
+    exit();
+}
 
 // Logika Tambah & Update
 if (isset($_POST['simpan'])) {
@@ -19,14 +24,14 @@ if (isset($_POST['simpan'])) {
         $id = $_POST['id_dokter'];
         mysqli_query($conn, "UPDATE dokter SET nama_dokter='$nama', spesialis='$spesialis', hari='$hari', jam_praktik='$jam', status='$status' WHERE id=$id");
     }
-    header("Location: kelola-jadwal.php");
+    header("Location: /api/kelola-jadwal.php");
 }
 
 // Logika Hapus
 if (isset($_GET['hapus'])) {
-    $id = $_GET['hapus'];
+    $id = (int) $_GET['hapus'];
     mysqli_query($conn, "DELETE FROM dokter WHERE id=$id");
-    header("Location: kelola-jadwal.php");
+    header("Location: /api/kelola-jadwal.php");
 }
 
 $result = mysqli_query($conn, "SELECT * FROM dokter");
@@ -43,7 +48,7 @@ $result = mysqli_query($conn, "SELECT * FROM dokter");
     <div class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-md">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Pengaturan Jadwal Dokter</h1>
-            <a href="dashboard-admin.php" class="text-blue-600 font-bold">← Kembali</a>
+            <a href="/api/dashboard-admin.php" class="block py-2.5 px-4 hover:bg-slate-700 rounded transition text-blue-300 font-semibold">← Kembali</a>
         </div>
 
         <form method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 bg-blue-50 p-4 rounded-lg">

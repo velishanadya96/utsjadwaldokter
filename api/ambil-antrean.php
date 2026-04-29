@@ -71,7 +71,7 @@ if (isset($_POST['konfirmasi'])) {
             <button name="konfirmasi" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-100 transition">
                 Konfirmasi Ambil Antrean
             </button>
-            <a href="dashboard-user.php" class="block text-center mt-4 text-gray-500 text-sm">Batal</a>
+            <a href="/api/dashboard-user.php" class="block text-center mt-4 text-gray-500 text-sm">Batal</a>
         </form>
     </div>
 </body>

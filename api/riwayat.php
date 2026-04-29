@@ -21,9 +21,9 @@ $nama_user = mysqli_real_escape_string($conn, $user['nama']);
     <aside class="w-64 min-h-screen bg-blue-700 text-white p-6">
         <h2 class="text-xl font-bold mb-8">Klinik Sehat</h2>
         <nav class="space-y-2">
-            <a href="dashboard-user.php" class="block py-2.5 px-4 hover:bg-blue-600 rounded transition">Cek Jadwal</a>
-            <a href="riwayat.php" class="block py-2.5 px-4 bg-blue-800 rounded transition font-bold">Riwayat Antrean</a>
-            <a href="logout.php" class="block py-2.5 px-4 text-blue-200 mt-20">Keluar</a>
+            <a href="/api/dashboard-user.php" class="block py-2.5 px-4 hover:bg-blue-600 rounded transition">Cek Jadwal</a>
+            <a href="/api/riwayat.php" class="block py-2.5 px-4 bg-blue-800 rounded transition font-bold">Riwayat Antrean</a>
+            <a href="/api/logout.php" class="block py-2.5 px-4 text-blue-200 mt-20">Keluar</a>
         </nav>
     </aside>
 
