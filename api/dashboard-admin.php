@@ -1,16 +1,27 @@
 <?php
-// dashboard-admin.php
 include __DIR__ . '/auth_check.php';
 $user = checkAuth();
 
-// Khusus halaman admin, tambahkan cek role
 if ($user['role'] !== 'admin') {
     header("Location: /api/dashboard-user.php");
     exit();
 }
 
+// Handle hapus pasien
+if (isset($_GET['hapus'])) {
+    $hapus_id = (int) $_GET['hapus'];
+    mysqli_query($conn, "DELETE FROM users WHERE id = $hapus_id AND role = 'user'");
+    header("Location: /api/dashboard-admin.php");
+    exit();
+}
+
+// Ambil data pasien
 $result = mysqli_query($conn, "SELECT * FROM users WHERE role = 'user' ORDER BY id DESC");
 
+// Debug sementara — hapus setelah berhasil
+if (!$result) {
+    die("Query error: " . mysqli_error($conn));
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,26 +50,32 @@ $result = mysqli_query($conn, "SELECT * FROM users WHERE role = 'user' ORDER BY 
                     <tr>
                         <th class="px-6 py-4 text-sm font-bold text-slate-600 border-b">Nama & NIK</th>
                         <th class="px-6 py-4 text-sm font-bold text-slate-600 border-b">TTL</th>
-                        <th class="px-6 py-4 text-sm font-bold text-slate-600 border-b">Domisili</th> <th class="px-6 py-4 text-sm font-bold text-slate-600 border-b">Riwayat</th>
+                        <th class="px-6 py-4 text-sm font-bold text-slate-600 border-b">Domisili</th>
+                        <th class="px-6 py-4 text-sm font-bold text-slate-600 border-b">Riwayat</th>
                         <th class="px-6 py-4 text-sm font-bold text-slate-600 border-b">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
+                    <?php if (mysqli_num_rows($result) === 0): ?>
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-slate-400">Belum ada data pasien.</td>
+                    </tr>
+                    <?php else: ?>
                     <?php while($row = mysqli_fetch_assoc($result)): ?>
                     <tr class="hover:bg-slate-50 transition">
                         <td class="px-6 py-4">
-                            <p class="font-bold text-slate-800"><?php echo $row['nama']; ?></p>
-                            <p class="text-xs text-slate-500"><?php echo $row['nik']; ?></p>
+                            <p class="font-bold text-slate-800"><?php echo htmlspecialchars($row['nama']); ?></p>
+                            <p class="text-xs text-slate-500"><?php echo htmlspecialchars($row['nik']); ?></p>
                         </td>
                         <td class="px-6 py-4 text-sm text-slate-600">
-                            <?php echo $row['tempat_lahir'] . ", " . $row['tgl_lahir']; ?>
+                            <?php echo htmlspecialchars($row['tempat_lahir'] . ", " . $row['tgl_lahir']); ?>
                         </td>
                         <td class="px-6 py-4 text-sm font-medium text-blue-600">
-                            <?php echo !empty($row['provinsi']) ? $row['provinsi'] : '-'; ?>
+                            <?php echo !empty($row['provinsi']) ? htmlspecialchars($row['provinsi']) : '-'; ?>
                         </td>
                         <td class="px-6 py-4">
                             <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded">
-                                <?php echo !empty($row['riwayat_penyakit']) ? $row['riwayat_penyakit'] : '-'; ?>
+                                <?php echo !empty($row['riwayat_penyakit']) ? htmlspecialchars($row['riwayat_penyakit']) : '-'; ?>
                             </span>
                         </td>
                         <td class="px-6 py-4 text-sm">
@@ -67,6 +84,7 @@ $result = mysqli_query($conn, "SELECT * FROM users WHERE role = 'user' ORDER BY 
                         </td>
                     </tr>
                     <?php endwhile; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -85,15 +103,20 @@ $result = mysqli_query($conn, "SELECT * FROM users WHERE role = 'user' ORDER BY 
                 <tbody class="divide-y divide-slate-100">
                     <?php
                     $q_antrean = mysqli_query($conn, "SELECT antrean.*, dokter.nama_dokter FROM antrean JOIN dokter ON antrean.id_dokter = dokter.id ORDER BY antrean.id DESC");
-                    while($a = mysqli_fetch_assoc($q_antrean)):
+                    if ($q_antrean && mysqli_num_rows($q_antrean) > 0):
+                        while($a = mysqli_fetch_assoc($q_antrean)):
                     ?>
                     <tr>
                         <td class="px-6 py-4 font-bold text-blue-600 text-xl">#<?php echo $a['no_antrean']; ?></td>
-                        <td class="px-6 py-4 font-medium"><?php echo $a['nama_pasien']; ?></td>
-                        <td class="px-6 py-4"><?php echo $a['nama_dokter']; ?></td>
+                        <td class="px-6 py-4 font-medium"><?php echo htmlspecialchars($a['nama_pasien']); ?></td>
+                        <td class="px-6 py-4"><?php echo htmlspecialchars($a['nama_dokter']); ?></td>
                         <td class="px-6 py-4 text-xs text-gray-400"><?php echo $a['tanggal_daftar']; ?></td>
                     </tr>
-                    <?php endwhile; ?>
+                    <?php endwhile; else: ?>
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-slate-400">Belum ada antrean hari ini.</td>
+                    </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
