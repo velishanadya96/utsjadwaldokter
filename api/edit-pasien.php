@@ -1,31 +1,43 @@
 <?php
-include 'config.php';
-session_start();
+include __DIR__ . '/config.php';
+include __DIR__ . '/auth_check.php';
+
+$user = checkAuth();
 
 // Proteksi: Hanya admin yang boleh edit
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: login.php");
+if ($user['role'] !== 'admin') {
+    header("Location: /api/login.php");
     exit();
 }
 
-$id = $_GET['id'];
-$query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$id'");
-$data = mysqli_fetch_assoc($query);
+$id = (int) ($_GET['id'] ?? 0);
+$stmt_get = mysqli_prepare($conn, "SELECT * FROM users WHERE id = ?");
+mysqli_stmt_bind_param($stmt_get, 'i', $id);
+mysqli_stmt_execute($stmt_get);
+$result_get = mysqli_stmt_get_result($stmt_get);
+$data = mysqli_fetch_assoc($result_get);
+
+if (!$data) {
+    header("Location: /api/dashboard-admin.php");
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nama = $_POST['nama'];
-    $nik = $_POST['nik'];
-    $riwayat = $_POST['riwayat_penyakit'];
-    $provinsi = $_POST['provinsi']; // Ambil input provinsi baru
+    $nama    = trim($_POST['nama'] ?? '');
+    $nik     = trim($_POST['nik'] ?? '');
+    $riwayat = trim($_POST['riwayat_penyakit'] ?? '');
+    $provinsi = trim($_POST['provinsi'] ?? '');
 
-    // Update data ke database
-    $sql = "UPDATE users SET nama='$nama', nik='$nik', riwayat_penyakit='$riwayat', provinsi='$provinsi' WHERE id='$id'";
-    
-    if (mysqli_query($conn, $sql)) {
-        echo "<script>alert('Data berhasil diperbarui!'); window.location='dashboard-admin.php';</script>";
+    // Update pakai prepared statement agar aman
+    $stmt_upd = mysqli_prepare($conn, "UPDATE users SET nama=?, nik=?, riwayat_penyakit=?, provinsi=? WHERE id=?");
+    mysqli_stmt_bind_param($stmt_upd, 'ssssi', $nama, $nik, $riwayat, $provinsi, $id);
+
+    if (mysqli_stmt_execute($stmt_upd)) {
+        echo "<script>alert('Data berhasil diperbarui!'); window.location='/api/dashboard-admin.php';</script>";
     } else {
-        echo "Error: " . mysqli_error($conn);
+        echo "<script>alert('Error: " . addslashes(mysqli_stmt_error($stmt_upd)) . "');</script>";
     }
+    mysqli_stmt_close($stmt_upd);
 }
 ?>
 
@@ -66,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="flex gap-3 mt-6">
                 <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-md">Simpan Perubahan</button>
-                <a href="dashboard-admin.php" class="flex-1 bg-gray-200 text-center text-gray-700 py-2 rounded-lg font-bold hover:bg-gray-300 transition">Batal</a>
+                <a href="/api/dashboard-admin.php" class="flex-1 bg-gray-200 text-center text-gray-700 py-2 rounded-lg font-bold hover:bg-gray-300 transition">Batal</a>
             </div>
         </form>
     </div>

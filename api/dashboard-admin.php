@@ -35,9 +35,9 @@ if (!$result) {
     <aside class="w-64 min-h-screen bg-slate-900 text-white p-6">
         <h2 class="text-xl font-bold mb-8 text-blue-400">Admin Klinik</h2>
         <nav class="flex flex-col gap-2">
-            <a href="dashboard-admin.php" class="block py-2.5 px-4 bg-slate-800 rounded text-white font-semibold">👥 Data Pasien</a>
-            <a href="kelola-jadwal.php" class="block py-2.5 px-4 hover:bg-slate-700 rounded transition text-blue-300 font-semibold">📅 Kelola Jadwal Dokter</a>
-            <a href="logout.php" class="block py-2.5 px-4 text-red-400 hover:bg-red-900/20 rounded transition mt-10">🚪 Logout</a>
+            <a href="/api/dashboard-admin.php" class="block py-2.5 px-4 bg-slate-800 rounded text-white font-semibold">👥 Data Pasien</a>
+            <a href="/api/kelola-jadwal.php" class="block py-2.5 px-4 hover:bg-slate-700 rounded transition text-blue-300 font-semibold">📅 Kelola Jadwal Dokter</a>
+            <a href="/api/logout.php" class="block py-2.5 px-4 text-red-400 hover:bg-red-900/20 rounded transition mt-10">🚪 Logout</a>
         </nav>
     </aside>
 
@@ -79,8 +79,8 @@ if (!$result) {
                             </span>
                         </td>
                         <td class="px-6 py-4 text-sm">
-                            <a href="edit-pasien.php?id=<?php echo $row['id']; ?>" class="text-blue-600 hover:text-blue-800 font-bold mr-3">Edit</a>
-                            <a href="dashboard-admin.php?hapus=<?php echo $row['id']; ?>" onclick="return confirm('Yakin ingin menghapus data ini?')" class="text-red-600 hover:text-red-800 font-bold">Hapus</a>
+                            <a href="/api/edit-pasien.php?id=<?php echo $row['id']; ?>" class="text-blue-600 hover:text-blue-800 font-bold mr-3">Edit</a>
+                            <a href="/api/dashboard-admin.php?hapus=<?php echo $row['id']; ?>" onclick="return confirm('Yakin ingin menghapus data ini?')" class="text-red-600 hover:text-red-800 font-bold">Hapus</a>
                         </td>
                     </tr>
                     <?php endwhile; ?>
