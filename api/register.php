@@ -87,7 +87,7 @@ if (isset($_POST['register'])) {
                 <input type="password" name="password" required class="w-full mt-1 px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg">Daftar Sekarang</button>
+            <button type="submit" name="register" class="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg">Daftar Sekarang</button>
         </form>
     </div>
 
