@@ -1,5 +1,6 @@
 <?php
-include __DIR__ . '/config.php';
+ob_start()
+include '/config.php';
 
 if (isset($_POST['register'])) {
     // Ambil data dari form dan bersihkan agar aman
