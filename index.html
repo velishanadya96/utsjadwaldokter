@@ -5,18 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Jadwal Dokter - Klinik Utama</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.4; }
+        }
+        .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(59,130,246,0.12); }
+    </style>
 </head>
 <body class="bg-gray-50">
-    <nav class="bg-white shadow-md p-4 flex justify-between items-center px-10">
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="bg-white shadow-md p-4 flex justify-between items-center px-10 sticky top-0 z-50">
         <h1 class="text-2xl font-bold text-blue-600">Klinik<span class="text-gray-800">Sehat</span></h1>
-        <div class="space-x-4">
-            <a href="/api/login.php">Masuk</a>
-            <a href="/api/register.php">Daftar</a>
+        <div class="flex items-center gap-4">
+            <a href="/api/login.php" class="text-gray-600 font-medium hover:text-blue-600 transition">Masuk</a>
+            <a href="/api/register.php" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-sm">Daftar</a>
         </div>
     </nav>
 
-    <header class="container mx-auto px-10 py-20 flex flex-col md:flex-row items-center">
+    <!-- ===== HERO ===== -->
+    <header class="container mx-auto px-10 py-20 flex flex-col md:flex-row items-center gap-12">
         <div class="md:w-1/2 mb-10 md:mb-0 text-center md:text-left">
+            <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
+                🏥 Klinik Sehat — Sistem Antrean Digital
+            </span>
             <h2 class="text-5xl font-extrabold text-gray-900 leading-tight mb-6">
                 Cek Jadwal Dokter <br><span class="text-blue-600">Lebih Mudah & Cepat.</span>
             </h2>
@@ -24,13 +39,177 @@
                 Pantau ketersediaan dokter spesialis kami secara real-time sebelum datang ke klinik. Hindari antrean panjang dan rencanakan kunjungan Anda.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <a href="/api/login.php" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:bg-blue-700">Cek Ketersediaan</a>
-                
+                <a href="/api/login.php" class="bg-blue-600 text-white px-8 py-3.5 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-center">
+                    Ambil Antrean Sekarang
+                </a>
+                <a href="#jadwal-hari-ini" class="border-2 border-blue-200 text-blue-600 px-8 py-3.5 rounded-xl font-bold hover:bg-blue-50 transition text-center">
+                    Lihat Jadwal Hari Ini ↓
+                </a>
             </div>
         </div>
         <div class="md:w-1/2">
-            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Medical Illustration" class="rounded-2xl shadow-2xl">
+            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                 alt="Medical Illustration" class="rounded-2xl shadow-2xl">
         </div>
     </header>
+
+    <!-- ===== STATS BAR ===== -->
+    <div class="bg-blue-600 text-white py-8">
+        <div class="container mx-auto px-10 grid grid-cols-3 gap-6 text-center">
+            <div>
+                <p class="text-3xl font-black" id="stat-dokter">—</p>
+                <p class="text-blue-200 text-sm mt-1">Dokter Spesialis</p>
+            </div>
+            <div>
+                <p class="text-3xl font-black" id="stat-tersedia">—</p>
+                <p class="text-blue-200 text-sm mt-1">Tersedia Hari Ini</p>
+            </div>
+            <div>
+                <p class="text-3xl font-black">✓</p>
+                <p class="text-blue-200 text-sm mt-1">Antrean Online</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JADWAL HARI INI ===== -->
+    <section id="jadwal-hari-ini" class="container mx-auto px-10 py-16">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-3">
+            <div>
+                <p class="text-blue-600 text-sm font-bold uppercase tracking-wider mb-1">Preview Jadwal</p>
+                <h3 class="text-3xl font-extrabold text-gray-900">
+                    Dokter Praktik Hari Ini
+                </h3>
+                <p class="text-gray-500 mt-1" id="label-tanggal-hari-ini">Memuat tanggal...</p>
+            </div>
+            <a href="/api/login.php"
+               class="self-start md:self-auto bg-white border-2 border-blue-500 text-blue-600 px-5 py-2.5 rounded-xl font-bold hover:bg-blue-50 transition text-sm whitespace-nowrap">
+                Login untuk Daftar →
+            </a>
+        </div>
+
+        <!-- Grid kartu dokter -->
+        <div id="grid-dokter" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            <!-- Loading skeleton -->
+            <div class="animate-pulse bg-white rounded-2xl border border-slate-200 p-5 h-32"></div>
+            <div class="animate-pulse bg-white rounded-2xl border border-slate-200 p-5 h-32"></div>
+            <div class="animate-pulse bg-white rounded-2xl border border-slate-200 p-5 h-32"></div>
+        </div>
+
+        <!-- CTA jika tidak ada dokter hari ini -->
+        <div id="no-dokter" class="hidden bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-6 text-center">
+            <div class="text-4xl mb-3">😴</div>
+            <p class="font-bold text-lg">Tidak ada dokter yang praktik hari ini.</p>
+            <p class="text-sm mt-1 text-amber-600">Login untuk melihat jadwal hari lain.</p>
+        </div>
+    </section>
+
+    <!-- ===== CARA PAKAI ===== -->
+    <section class="bg-slate-50 py-16">
+        <div class="container mx-auto px-10">
+            <h3 class="text-3xl font-extrabold text-gray-900 text-center mb-12">Cara Menggunakan Sistem</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-2xl p-6 shadow-sm text-center card-hover">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 text-3xl rounded-2xl flex items-center justify-center mx-auto mb-4">①</div>
+                    <h4 class="font-bold text-gray-800 text-lg mb-2">Daftar Akun</h4>
+                    <p class="text-gray-500 text-sm">Isi data diri Anda sekali, lalu login kapan saja untuk akses jadwal dokter.</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm text-center card-hover">
+                    <div class="w-16 h-16 bg-green-100 text-green-600 text-3xl rounded-2xl flex items-center justify-center mx-auto mb-4">②</div>
+                    <h4 class="font-bold text-gray-800 text-lg mb-2">Pilih Dokter & Tanggal</h4>
+                    <p class="text-gray-500 text-sm">Cek ketersediaan dokter sesuai hari kunjungan yang Anda inginkan.</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm text-center card-hover">
+                    <div class="w-16 h-16 bg-indigo-100 text-indigo-600 text-3xl rounded-2xl flex items-center justify-center mx-auto mb-4">③</div>
+                    <h4 class="font-bold text-gray-800 text-lg mb-2">Ambil Nomor Antrean</h4>
+                    <p class="text-gray-500 text-sm">Konfirmasi kunjungan dan dapatkan nomor antrean digital Anda seketika.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="bg-slate-900 text-slate-400 text-center py-8 text-sm">
+        <p class="font-bold text-white mb-1">Klinik<span class="text-blue-400">Sehat</span></p>
+        <p>Sistem Jadwal Praktik Dokter Online &copy; 2025</p>
+    </footer>
+
+    <script>
+    (function () {
+        // Nama hari & bulan Indonesia
+        const HARI_ID  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+        const BULAN_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+        const now    = new Date();
+        const hariId = HARI_ID[now.getDay()];
+        const tglFmt = hariId + ', ' + now.getDate() + ' ' + BULAN_ID[now.getMonth()] + ' ' + now.getFullYear();
+
+        // Set label tanggal
+        document.getElementById('label-tanggal-hari-ini').textContent = tglFmt;
+
+        // Fetch data dokter dari API
+        fetch('/api/api-dokter.php')
+            .then(r => r.json())
+            .then(dokter => {
+                // Update stats
+                document.getElementById('stat-dokter').textContent = dokter.length;
+
+                // Filter dokter yang praktik hari ini
+                const hariIni = dokter.filter(d => d.hari && d.hari.includes(hariId));
+                const tersediaHariIni = hariIni.filter(d => d.status === 'Tersedia');
+                document.getElementById('stat-tersedia').textContent = tersediaHariIni.length;
+
+                const grid = document.getElementById('grid-dokter');
+                const noDokter = document.getElementById('no-dokter');
+
+                if (hariIni.length === 0) {
+                    grid.innerHTML = '';
+                    noDokter.classList.remove('hidden');
+                    return;
+                }
+
+                grid.innerHTML = hariIni.map(d => {
+                    const tersedia = d.status === 'Tersedia';
+                    const inisial  = (d.nama_dokter || '?').charAt(0).toUpperCase();
+                    return `
+                    <div class="bg-white rounded-2xl border ${tersedia ? 'border-green-100' : 'border-slate-200'} p-5 shadow-sm flex gap-4 items-start card-hover">
+                        <!-- Avatar -->
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center font-black text-white text-xl flex-shrink-0
+                            ${tersedia ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gradient-to-br from-slate-400 to-slate-500'}">
+                            ${inisial}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-slate-800 truncate">${esc(d.nama_dokter)}</p>
+                            <p class="text-xs text-blue-600 font-semibold mb-2">${esc(d.spesialis)}</p>
+                            <div class="flex items-center flex-wrap gap-2">
+                                <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                    🕐 ${esc(d.jam_praktik)}
+                                </span>
+                                <span class="flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full
+                                    ${tersedia ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                    <span class="w-1.5 h-1.5 rounded-full ${tersedia ? 'bg-green-500 pulse-dot' : 'bg-red-500'}"></span>
+                                    ${esc(d.status)}
+                                </span>
+                            </div>
+                        </div>
+                        <a href="/api/login.php"
+                           class="flex-shrink-0 self-center text-xs font-bold px-3 py-1.5 rounded-xl transition
+                               ${tersedia ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-slate-100 text-slate-400 cursor-not-allowed pointer-events-none'}">
+                            ${tersedia ? 'Daftar →' : 'Penuh'}
+                        </a>
+                    </div>`;
+                }).join('');
+            })
+            .catch(() => {
+                document.getElementById('grid-dokter').innerHTML =
+                    '<div class="col-span-full text-center text-slate-400 py-8">Gagal memuat jadwal dokter.</div>';
+            });
+
+        function esc(str) {
+            const d = document.createElement('div');
+            d.appendChild(document.createTextNode(str || ''));
+            return d.innerHTML;
+        }
+    })();
+    </script>
 </body>
 </html>
