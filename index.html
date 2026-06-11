@@ -1,3 +1,20 @@
+<?php
+// Hubungkan dengan konfigurasi database
+include __DIR__ . '/api/config.php';
+
+// Petakan hari bahasa Inggris ke bahasa Indonesia
+$hari_map = [
+    'Monday'    => 'Senin',
+    'Tuesday'   => 'Selasa',
+    'Wednesday' => 'Rabu',
+    'Thursday'  => 'Kamis',
+    'Friday'    => 'Jumat',
+    'Saturday'  => 'Sabtu',
+    'Sunday'    => 'Minggu',
+];
+$hari_ini_en = date('l');
+$hari_ini_id = $hari_map[$hari_ini_en] ?? $hari_ini_en;
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -5,17 +22,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Jadwal Dokter - Klinik Utama</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.4; }
+        }
+        .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    </style>
 </head>
 <body class="bg-gray-50">
     <nav class="bg-white shadow-md p-4 flex justify-between items-center px-10">
         <h1 class="text-2xl font-bold text-blue-600">Klinik<span class="text-gray-800">Sehat</span></h1>
         <div class="space-x-4">
-            <a href="/api/login.php">Masuk</a>
-            <a href="/api/register.php">Daftar</a>
+            <a href="/api/login.php" class="text-gray-700 hover:text-blue-600 font-semibold">Masuk</a>
+            <a href="/api/register.php" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-blue-700">Daftar</a>
         </div>
     </nav>
 
-    <header class="container mx-auto px-10 py-20 flex flex-col md:flex-row items-center">
+    <header class="container mx-auto px-10 py-16 flex flex-col md:flex-row items-center border-b border-gray-200">
         <div class="md:w-1/2 mb-10 md:mb-0 text-center md:text-left">
             <h2 class="text-5xl font-extrabold text-gray-900 leading-tight mb-6">
                 Cek Jadwal Dokter <br><span class="text-blue-600">Lebih Mudah & Cepat.</span>
@@ -24,13 +48,70 @@
                 Pantau ketersediaan dokter spesialis kami secara real-time sebelum datang ke klinik. Hindari antrean panjang dan rencanakan kunjungan Anda.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <a href="/api/login.php" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:bg-blue-700">Cek Ketersediaan</a>
-                
+                <a href="/api/login.php" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:bg-blue-700">Ambil Nomor Antrean</a>
             </div>
         </div>
         <div class="md:w-1/2">
             <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Medical Illustration" class="rounded-2xl shadow-2xl">
         </div>
     </header>
+
+    <section class="container mx-auto px-10 py-16">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-2">
+            <div>
+                <h3 class="text-2xl font-bold text-gray-800">Preview Dokter Praktik Hari Ini</h3>
+                <p class="text-gray-500 mt-1">Menampilkan dokter yang tersedia pada hari <strong><?php echo $hari_ini_id; ?></strong> (<?php echo date('d F Y'); ?>)</p>
+            </div>
+            <a href="/api/login.php" class="text-blue-600 font-bold hover:underline flex items-center gap-1 text-sm">
+                Lihat Semua Tanggal &rarr;
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <?php
+            // Lakukan Prepared Statement untuk mencari dokter berdasarkan hari kerja saat ini
+            $q_hari_ini = mysqli_prepare($conn, "SELECT * FROM dokter WHERE hari LIKE ? ORDER BY nama_dokter ASC");
+            $like_hari  = '%' . $hari_ini_id . '%';
+            mysqli_stmt_bind_param($q_hari_ini, 's', $like_hari);
+            mysqli_stmt_execute($q_hari_ini);
+            $res_hari_ini = mysqli_stmt_get_result($q_hari_ini);
+
+            if ($res_hari_ini && mysqli_num_rows($res_hari_ini) > 0):
+                while ($d = mysqli_fetch_assoc($res_hari_ini)):
+                    $tersedia = ($d['status'] === 'Tersedia');
+            ?>
+            <div class="bg-white rounded-2xl border <?php echo $tersedia ? 'border-green-100 shadow-green-50/50' : 'border-red-100 shadow-red-50/50'; ?> p-5 shadow-md flex gap-4 items-start">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center font-black text-white text-xl flex-shrink-0
+                    <?php echo $tersedia ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gradient-to-br from-slate-400 to-slate-500'; ?>">
+                    <?php echo mb_strtoupper(mb_substr($d['nama_dokter'], 0, 1)); ?>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-bold text-gray-800 text-lg truncate"><?php echo htmlspecialchars($d['nama_dokter']); ?></p>
+                    <p class="text-sm text-blue-600 font-semibold mb-3"><?php echo htmlspecialchars($d['spesialis']); ?></p>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium">
+                            🕐 <?php echo htmlspecialchars($d['jam_praktik']); ?>
+                        </span>
+                        <span class="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full
+                            <?php echo $tersedia ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
+                            <?php if ($tersedia): ?>
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot"></span> Tersedia
+                            <?php else: ?>
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Penuh
+                            <?php endif; ?>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <?php
+                endwhile;
+            else:
+            ?>
+            <div class="col-span-full bg-amber-50 border border-amber-100 text-amber-700 rounded-2xl p-6 text-center text-sm font-medium">
+                Tidak ada dokter yang berpraktik atau tersedia pada hari <?php echo $hari_ini_id; ?>.
+            </div>
+            <?php endif; ?>
+        </div>
+    </section>
 </body>
 </html>
