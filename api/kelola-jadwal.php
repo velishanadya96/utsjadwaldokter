@@ -76,15 +76,27 @@ $HARI_LIST = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
     <!-- Layout -->
     <div class="flex min-h-screen">
 
-        <!-- Sidebar -->
-        <aside class="w-64 min-h-screen bg-slate-900 text-white p-6 flex flex-col">
-            <h2 class="text-xl font-bold mb-8 text-blue-400">Admin Klinik</h2>
-            <nav class="flex flex-col gap-2 flex-1">
-                <a href="/api/dashboard-admin.php" class="block py-2.5 px-4 hover:bg-slate-700 rounded transition text-slate-300 font-semibold">Data Pasien</a>
-                <a href="/api/kelola-jadwal.php"   class="block py-2.5 px-4 bg-blue-700 rounded text-white font-semibold">Kelola Jadwal Dokter</a>
-            </nav>
-            <a href="/api/logout.php" class="block py-2.5 px-4 text-red-400 hover:bg-red-900/20 rounded transition text-sm">Logout</a>
-        </aside>
+        <aside class="w-64 min-h-screen bg-slate-900 text-white p-6 flex flex-col shadow-xl">
+        <div class="mb-10">
+            <h2 class="text-xl font-bold text-blue-400">Admin Klinik</h2>
+            <p class="text-slate-500 text-xs mt-1">Panel Administrasi</p>
+        </div>
+        <nav class="flex flex-col gap-2 flex-1">
+            <a href="/api/dashboard-admin.php" class="flex items-center gap-2 py-2.5 px-4 bg-blue-700 rounded-xl text-white font-semibold text-sm">
+                🧑‍⚕️ Data Pasien
+            </a>
+            <a href="/api/kelola-jadwal.php" class="flex items-center gap-2 py-2.5 px-4 hover:bg-slate-700 rounded-xl transition text-slate-300 font-semibold text-sm">
+                📅 Kelola Jadwal Dokter
+            </a>
+        </nav>
+        <div class="border-t border-slate-700 pt-4">
+            <p class="text-xs text-slate-500 mb-1">Login sebagai</p>
+            <p class="text-sm font-bold text-white truncate"><?php echo htmlspecialchars($user['nama']); ?></p>
+            <a href="/api/logout.php" class="mt-3 flex items-center gap-1 text-red-400 text-xs hover:text-red-300 transition">
+                ↩ Logout
+            </a>
+        </div>
+    </aside>
 
         <!-- Main -->
         <main class="flex-1 p-8 overflow-auto">
