@@ -19,7 +19,6 @@ $nama_user = mysqli_real_escape_string($conn, $user['nama']);
 </head>
 <body class="bg-slate-50 flex">
 
-    // SIDEBAR
 
     <aside class="w-64 min-h-screen bg-gradient-to-b from-blue-700 to-blue-900 text-white p-6 flex flex-col shadow-xl">
         <div class="mb-10">
