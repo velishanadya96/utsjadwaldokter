@@ -83,7 +83,7 @@ $HARI_LIST = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
         </div>
         <nav class="flex flex-col gap-2 flex-1">
             <a href="/api/dashboard-admin.php" class="flex items-center gap-2 py-2.5 px-4 hover:bg-slate-700 rounded-xl transition text-slate-300 font-semibold text-sm">
-                📅 Kelola Jadwal Dokter
+                🧑‍⚕️ Data Pasien
             </a>
             <a href="/api/kelola-jadwal.php" class="flex items-center gap-2 py-2.5 px-4 bg-blue-700 rounded-xl text-white font-semibold text-sm">
                 📅 Kelola Jadwal Dokter
